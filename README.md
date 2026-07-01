@@ -99,3 +99,16 @@ helm search repo my-repo
 NAME                    CHART VERSION   APP VERSION     DESCRIPTION               
 my-repo/member-app      0.1.1           1.0.1           fastapi member application
 ```
+
+### 새로운 chart 만들고 배포하기
+```bash
+# 새로운 chart 를 압축해서 docs/ 폴더 안에 저장
+helm package charts/helm02_micro -d docs/
+# index.yaml 파일을 업데이트 하기
+helm repo index docs/ --url  https://ShinJunhan.github.io/my-helm-chart/
+
+# docs 에 tgz 파일을 넣고, index.yaml 파일에 새로운 정보를 넣은 다음 push 하면 배포가 자동으로 된다
+git add .
+git commit -m "release: market-app chart v1.0.0 package"
+git push
+```
