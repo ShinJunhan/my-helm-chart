@@ -111,4 +111,43 @@ helm repo index docs/ --url  https://ShinJunhan.github.io/my-helm-chart/
 git add .
 git commit -m "release: market-app chart v1.0.0 package"
 git push
+
+# 등록된 helm 저장소 검색
+helm repo ls
+
+# 등록된 저장소에 새로운 chart 가 있는지 검색해서 다시 동기화 하도록 한다
+helm repo update
+
+# 특정 저장소에 어떤 chart 가 있는지 search
+helm search repo my-repo
+[user1@master my-helm-chart]$ helm search repo my-repo
+NAME                    CHART VERSION   APP VERSION     DESCRIPTION                                 
+my-repo/market-app      0.1.0           1.0.0           Market Application Helm Chart for Kubernetes
+my-repo/member-app      0.1.1           1.0.1           fastapi member application
+
+# 특정 chart install 하기
+helm install marker-release my-repo/market-app -n helm02 --create-namespace
+# 배포 확인 하기
+helm ls -n helm02
+# pod, service 도 확인하기
+k get pod,svc -n helm02
+# values.yaml 파일의 특정 변수의 내용을 override 해서 수정 배포하기
+helm upgrade market-release my-repo/market-app -n helm02 --set replicaCount=5
+# pod 갯수 확인 (5개)
+k get pod -n helm02
+# 배포 history 목록 검색
+helm history market-release -n helm02
+REVISION        UPDATED                         STATUS          CHART            APP VERSION      DESCRIPTION     
+1               Wed Jul  1 10:17:48 2026        superseded      market-app-0.1.0 1.0.0            Install complete
+2               Wed Jul  1 10:18:15 2026        deployed        market-app-0.1.0 1.0.0            Upgrade complete
+# 특정 revision 으로 rollback 시키기
+helm rollback market-release 1 -n helm02
+REVISION        UPDATED                         STATUS          CHART            APP VERSION      DESCRIPTION     
+1               Wed Jul  1 10:17:48 2026        superseded      market-app-0.1.0 1.0.0            Install complete
+2               Wed Jul  1 10:18:15 2026        superseded      market-app-0.1.0 1.0.0            Upgrade complete
+3               Wed Jul  1 10:22:05 2026        deployed        market-app-0.1.0 1.0.0            Rollback to 1   
+# pod 갯수 확인(2개)
+k get pod -n helm02
+
+
 ```
